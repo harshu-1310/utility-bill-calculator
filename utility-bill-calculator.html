@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utility Bill Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 420px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 35px 30px 25px 30px;
+            border-radius: 16px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+            position: relative;
+        }
+        .icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            color: #0078d7;
+            margin-bottom: 10px;
+        }
+        h2 {
+            text-align: center;
+            color: #222;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        label {
+            display: block;
+            margin-top: 18px;
+            color: #333;
+            font-weight: 500;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 7px;
+            border: 1.5px solid #b3d1f7;
+            border-radius: 6px;
+            font-size: 15px;
+            background: #f7fbff;
+            transition: border 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus {
+            border: 1.5px solid #0078d7;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 28px;
+            background: linear-gradient(90deg, #0078d7 60%, #005fa3 100%);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,120,215,0.08);
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #005fa3 60%, #0078d7 100%);
+        }
+        .receipt {
+            background: #f0faff;
+            margin-top: 30px;
+            padding: 18px 15px 15px 15px;
+            border-radius: 10px;
+            border: 1.5px solid #b3e0ff;
+            box-shadow: 0 1px 4px rgba(0,120,215,0.06);
+            font-size: 16px;
+            color: #1a3a5d;
+        }
+        .receipt strong {
+            font-size: 18px;
+            color: #0078d7;
+        }
+        .error {
+            color: #d8000c;
+            background: #ffd2d2;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 14px;
+            font-size: 15px;
+            border: 1.2px solid #ffbaba;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">&#128267;</div>
+        <h2>Utility Bill Calculator</h2>
+        <form id="billForm" autocomplete="off">
+            <label for="customerName">Customer Name:</label>
+            <input type="text" id="customerName" placeholder="Enter name" required>
+            <label for="prevReading">Previous Meter Reading:</label>
+            <input type="number" id="prevReading" min="0" placeholder="e.g. 1200" required>
+            <label for="currReading">Current Meter Reading:</label>
+            <input type="number" id="currReading" min="0" placeholder="e.g. 1350" required>
+            <button type="submit">Calculate Bill</button>
+        </form>
+        <div id="output"></div>
+    </div>
+    <script>
+        function calculateBill(units) {
+            let cost = 0;
+            if (units <= 100) {
+                cost = units * 1.0;
+            } else if (units <= 300) {
+                cost = 100 * 1.0 + (units - 100) * 2.0;
+            } else {
+                cost = 100 * 1.0 + 200 * 2.0 + (units - 300) * 5.0;
+            }
+            return cost;
+        }
+
+        document.getElementById('billForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('customerName').value.trim();
+            const prev = parseInt(document.getElementById('prevReading').value, 10);
+            const curr = parseInt(document.getElementById('currReading').value, 10);
+            const output = document.getElementById('output');
+            output.innerHTML = '';
+
+            if (prev > curr) {
+                output.innerHTML = '<div class="error">Error: Previous Meter Reading cannot be higher than Current Meter Reading.</div>';
+                return;
+            }
+            const units = curr - prev;
+            const cost = calculateBill(units);
+            const tax = cost * 0.10;
+            const total = cost + tax;
+            output.innerHTML = `
+                <div class="receipt">
+                    <strong>Digital Receipt</strong><br>
+                    Customer Name: ${name}<br>
+                    Units Consumed: ${units}<br>
+                    Tax Amount: $${tax.toFixed(2)}<br>
+                    Final Total: $${total.toFixed(2)}
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
